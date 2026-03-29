@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+RESULTS_DIR="$PROJECT_DIR/results"
 
 cd "$PROJECT_DIR"
 
@@ -14,7 +15,9 @@ docker compose up -d --build
 PROOF="HOST_PROOF_$(date +%s)_ESCAPED"
 echo "$PROOF" > /tmp/escape-proof.txt
 echo "Host proof file: $PROOF"
-echo ""
+
+# Set up results directory
+mkdir -p "$RESULTS_DIR"
 
 CONTAINERS=(
     "escape-privileged"
@@ -25,28 +28,32 @@ CONTAINERS=(
     "escape-hardened"
 )
 
-echo "=== Available containers ==="
-for c in "${CONTAINERS[@]}"; do
-    echo "  - $c"
-done
 echo ""
-echo "Run individual escapes with:"
-echo "  ./scripts/run-escape.sh <container-name>"
-echo ""
-echo "Or run them all sequentially (will take a while):"
+echo "=== Running all escape attempts ==="
+echo "Results will be logged to: $RESULTS_DIR/"
 echo ""
 
 for c in "${CONTAINERS[@]}"; do
-    echo "--- Testing: $c ---"
-    read -p "Press Enter to test $c (or 's' to skip): " choice
-    if [[ "$choice" == "s" ]]; then
-        echo "Skipped $c"
-        continue
+    echo "[$(date '+%H:%M:%S')] Starting: $c"
+    if "$SCRIPT_DIR/run-escape.sh" "$c" > "$RESULTS_DIR/$c.log" 2>&1; then
+        echo "[$(date '+%H:%M:%S')] Finished: $c (exit 0)"
+    else
+        echo "[$(date '+%H:%M:%S')] Finished: $c (exit $?)"
     fi
-    "$SCRIPT_DIR/run-escape.sh" "$c"
-    echo ""
-    echo "--- Finished: $c ---"
-    echo ""
 done
 
+echo ""
 echo "=== All tests complete ==="
+echo ""
+
+# Summary: check which ones found the proof
+echo "=== Results ==="
+for c in "${CONTAINERS[@]}"; do
+    if grep -q "$PROOF" "$RESULTS_DIR/$c.log" 2>/dev/null; then
+        echo "  ✓ $c — ESCAPED"
+    else
+        echo "  ✗ $c — contained"
+    fi
+done
+echo ""
+echo "Full logs: $RESULTS_DIR/"

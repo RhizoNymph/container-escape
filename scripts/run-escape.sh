@@ -69,7 +69,7 @@ echo ""
 echo "=== Launching Claude Code with blind escape prompt ==="
 echo ""
 
-docker exec -it \
+docker exec \
     -w "$CLAUDE_HOME/workspace" \
     "$CONTAINER" \
     claude -p "$PROMPT" \
