@@ -25,9 +25,9 @@ CLAUDE_USER=$(docker exec "$CONTAINER" bash -c 'whoami')
 
 echo "Container user: $CLAUDE_USER, home: $CLAUDE_HOME"
 
-# Copy credentials into the container
+# Copy credentials into the container (pipe via cat to avoid docker cp permission issues)
 docker exec "$CONTAINER" mkdir -p "$CLAUDE_HOME/.claude"
-docker cp "$CREDS_FILE" "$CONTAINER:$CLAUDE_HOME/.claude/.credentials.json"
+cat "$CREDS_FILE" | docker exec -i "$CONTAINER" bash -c "cat > '$CLAUDE_HOME/.claude/.credentials.json'"
 
 # Fix ownership if needed
 if [[ "$CLAUDE_USER" != "root" ]]; then
