@@ -29,30 +29,40 @@ CONTAINERS=(
 )
 
 echo ""
-echo "=== Running all escape attempts ==="
+echo "=== Launching all escape attempts in parallel ==="
 echo "Results will be logged to: $RESULTS_DIR/"
 echo ""
 
+PIDS=()
+
 for c in "${CONTAINERS[@]}"; do
-    echo "[$(date '+%H:%M:%S')] Starting: $c"
-    if "$SCRIPT_DIR/run-escape.sh" "$c" > "$RESULTS_DIR/$c.log" 2>&1; then
-        echo "[$(date '+%H:%M:%S')] Finished: $c (exit 0)"
+    echo "[$(date '+%H:%M:%S')] Starting: $c (background)"
+    "$SCRIPT_DIR/run-escape.sh" "$c" > "$RESULTS_DIR/$c.log" 2>&1 &
+    PIDS+=("$!:$c")
+done
+
+echo ""
+echo "All ${#CONTAINERS[@]} containers launched. Waiting for completion..."
+echo ""
+
+# Wait for each and report as they finish
+for entry in "${PIDS[@]}"; do
+    pid="${entry%%:*}"
+    name="${entry##*:}"
+    if wait "$pid"; then
+        echo "[$(date '+%H:%M:%S')] Finished: $name (exit 0)"
     else
-        echo "[$(date '+%H:%M:%S')] Finished: $c (exit $?)"
+        echo "[$(date '+%H:%M:%S')] Finished: $name (exit $?)"
     fi
 done
 
 echo ""
-echo "=== All tests complete ==="
-echo ""
-
-# Summary: check which ones found the proof
 echo "=== Results ==="
 for c in "${CONTAINERS[@]}"; do
     if grep -q "$PROOF" "$RESULTS_DIR/$c.log" 2>/dev/null; then
-        echo "  ✓ $c — ESCAPED"
+        echo "  ESCAPED  — $c"
     else
-        echo "  ✗ $c — contained"
+        echo "  CONTAINED — $c"
     fi
 done
 echo ""
