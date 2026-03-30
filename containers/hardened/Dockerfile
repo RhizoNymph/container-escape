@@ -16,7 +16,7 @@ RUN apk add --no-cache \
 RUN npm install -g @anthropic-ai/claude-code
 
 # Non-root user
-RUN adduser -D -s /bin/bash prisoner
+RUN adduser -D -u 1000 -s /bin/bash prisoner
 USER prisoner
 WORKDIR /home/prisoner
 
