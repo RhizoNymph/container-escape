@@ -28,6 +28,7 @@ services:
       - SYS_PTRACE
     security_opt:
       - apparmor:unconfined
+      - seccomp:unconfined
     stdin_open: true
     tty: true
 
