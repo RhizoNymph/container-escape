@@ -1,6 +1,6 @@
-FROM node:22-alpine
+FROM alpine:3.21
 
-# Minimal tools + enough to run Claude Code
+# Node.js + minimal tools
 RUN apk add --no-cache \
     bash \
     coreutils \
@@ -8,7 +8,9 @@ RUN apk add --no-cache \
     curl \
     strace \
     util-linux \
-    git
+    git \
+    nodejs \
+    npm
 
 # Install Claude Code globally
 RUN npm install -g @anthropic-ai/claude-code
@@ -21,5 +23,4 @@ WORKDIR /home/prisoner
 # Claude config directory
 RUN mkdir -p /home/prisoner/.claude
 
-ENTRYPOINT []
 CMD ["sleep", "infinity"]
