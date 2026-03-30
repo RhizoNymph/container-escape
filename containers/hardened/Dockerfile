@@ -21,4 +21,5 @@ WORKDIR /home/prisoner
 # Claude config directory
 RUN mkdir -p /home/prisoner/.claude
 
+ENTRYPOINT []
 CMD ["sleep", "infinity"]
