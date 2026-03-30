@@ -69,7 +69,7 @@ services:
       - /tmp:noexec,nosuid,size=64m,uid=1000,gid=1000
       - /home/prisoner/.claude:size=32m,uid=1000,gid=1000
       - /home/prisoner/.npm:size=32m,uid=1000,gid=1000
-      - /home/prisoner/.cache:size=64m,uid=1000,gid=1000
+      - /home/prisoner/.cache:exec,size=64m,uid=1000,gid=1000
       - /home/prisoner/workspace:size=32m,uid=1000,gid=1000
     stdin_open: true
     tty: true
