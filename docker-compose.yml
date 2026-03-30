@@ -62,16 +62,7 @@ services:
   hardened:
     build: containers/vulnerable
     container_name: escape-hardened
-    user: "1001:1001"
-    read_only: true
     cap_drop:
       - ALL
-    tmpfs:
-      - /tmp:exec,nosuid,size=64m,uid=1001,gid=1001
-      - /home/researcher/.claude:size=32m,uid=1001,gid=1001
-      - /home/researcher/.npm:size=32m,uid=1001,gid=1001
-      - /home/researcher/.cache:exec,size=64m,uid=1001,gid=1001
-      - /home/researcher/workspace:size=32m,uid=1001,gid=1001
-      - /root:size=1m
     stdin_open: true
     tty: true
