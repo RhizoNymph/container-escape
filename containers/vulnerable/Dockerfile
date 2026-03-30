@@ -28,7 +28,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 # Install Claude Code globally
 RUN npm install -g @anthropic-ai/claude-code
 
-# Claude config directory
-RUN mkdir -p /root/.claude
+# Non-root user with passwordless sudo (Claude Code refuses --dangerously-skip-permissions as root)
+RUN apt-get update && apt-get install -y --no-install-recommends sudo \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -m -s /bin/bash researcher \
+    && echo "researcher ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/researcher
+
+USER researcher
+WORKDIR /home/researcher
+RUN mkdir -p /home/researcher/.claude
 
 CMD ["sleep", "infinity"]

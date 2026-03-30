@@ -11,9 +11,10 @@ cd "$PROJECT_DIR"
 echo "=== Building and starting all containers ==="
 docker compose up -d --build
 
-# Create proof file on host
+# Create proof file on host (multiple locations for different OS layouts)
 PROOF="HOST_PROOF_$(date +%s)_ESCAPED"
 echo "$PROOF" > /tmp/escape-proof.txt
+echo "$PROOF" > /root/escape-proof.txt
 echo "Host proof file: $PROOF"
 
 # Set up results directory
