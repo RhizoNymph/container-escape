@@ -66,5 +66,9 @@ services:
       - ALL
     tmpfs:
       - /tmp:noexec,nosuid,size=64m
+      - /home/prisoner/.claude:size=32m
+      - /home/prisoner/.npm:size=32m
+      - /home/prisoner/.cache:size=64m
+      - /home/prisoner/workspace:size=32m
     stdin_open: true
     tty: true
