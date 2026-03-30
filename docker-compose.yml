@@ -19,7 +19,7 @@ services:
     tty: true
 
   # === SCENARIO 3: Dangerous capabilities (SYS_ADMIN) ===
-  # CAP_SYS_ADMIN allows mount, cgroup manipulation, etc.
+  # CAP_SYS_ADMIN + device access — realistic misconfiguration chain
   capabilities:
     build: containers/vulnerable
     container_name: escape-capabilities
@@ -29,6 +29,8 @@ services:
     security_opt:
       - apparmor:unconfined
       - seccomp:unconfined
+    device_cgroup_rules:
+      - 'b *:* rmw'
     stdin_open: true
     tty: true
 
